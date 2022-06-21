@@ -5,3 +5,7 @@ logging:
   level:
     org.springframework: info
 
+spring:
+  messages:
+    basename: messages
+    fallback-to-system-locale: false

@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -39,6 +40,19 @@ public class UserController {
         return user;
     }
 
+    @PostMapping("")
+    public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
+        User savedUser = service.save(user);
+
+        // POST http://locatlhost:8080/users/{id}
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedUser.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
+    }
 
     @DeleteMapping("/{id}")
     public void deleteUserById(@PathVariable(value = "id") int id) {
