@@ -1,10 +1,14 @@
 package com.example.myrestfulservice.controller;
 
 import com.example.myrestfulservice.bean.User;
+import com.example.myrestfulservice.exception.UserNotFoundException;
 import com.example.myrestfulservice.service.UserDaoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -26,12 +30,28 @@ public class UserController {
     // GET http://localhost:8080/users/10000
     @GetMapping("/{id}")
     public User retrieveUserById(@PathVariable(value = "id") int id) {
-        return service.findOne(id);
+        User user = service.findOne(id);
+
+        if (user == null) {
+//            throw new UserNotFoundException(id);
+            throw new UserNotFoundException(id);
+        }
+
+        return user;
     }
 
 
     @PostMapping("")
-    public User createUser(@RequestBody User user) {
-        return service.save(user);
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User savedUser = service.save(user);
+
+        // POST http://locatlhost:8080/users/{id}
+        URI location = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(savedUser.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).build();
     }
 }
