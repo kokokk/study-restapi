@@ -33,7 +33,6 @@ public class UserController {
         User user = service.findOne(id);
 
         if (user == null) {
-//            throw new UserNotFoundException(id);
             throw new UserNotFoundException(id);
         }
 
@@ -41,15 +40,28 @@ public class UserController {
     }
 
 
-    @PostMapping("")
-    public ResponseEntity<User> createUser(@RequestBody User user) {
-        User savedUser = service.save(user);
+    @DeleteMapping("/{id}")
+    public void deleteUserById(@PathVariable(value = "id") int id) {
+        User user = service.deleteById(id);
 
-        // POST http://locatlhost:8080/users/{id}
+        if (user == null) {
+            throw new UserNotFoundException(id);
+        }
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<User> modifyUserById(@PathVariable(value = "id") int id,
+                                               @RequestBody User user) {
+        user.setId(id);
+        User modifiedUser = service.updateUserById(user);
+
+        if (user == null) {
+            throw new UserNotFoundException("id-" + id);
+        }
+
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(savedUser.getId())
+                .build()
                 .toUri();
 
         return ResponseEntity.created(location).build();
