@@ -9,3 +9,13 @@ spring:
   messages:
     basename: messages
     fallback-to-system-locale: false
+  ## swagger 사용을 위함
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
